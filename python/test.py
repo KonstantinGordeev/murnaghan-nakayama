@@ -1,7 +1,7 @@
 import dataclasses
 import pytest
 
-from murnaghan_nakayama import CharTable
+from lib import CharTable
 
 
 @dataclasses.dataclass
@@ -132,5 +132,5 @@ def test_partitions(test_case: PartitionsCase) -> None:
 @pytest.mark.parametrize('test_case', BorderStripsTests)
 def test_get_border_strips(test_case: BorderStripsCase) -> None:
     generator = CharTable.get_border_strips(test_case.lambda_, test_case.k)
-    result = [(tuple(item[0]), tuple(item[1])) for item in generator]
+    result = [(tuple(item[0]), tuple(item[1])) for item in generator if item is not None]
     assert result == test_case.border_strips

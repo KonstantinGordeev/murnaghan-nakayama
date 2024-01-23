@@ -17,8 +17,8 @@ class CharTable(object):
         self.partitions: tp.List[tp.List[tp.Tuple[int, ...]]] = [[()], [(1,)]]
 
     @staticmethod
-    def get_border_strips(lambda_: tp.Tuple[int, ...], k: int) -> tp.Generator[None, tp.Tuple[tp.List[int],
-                                                                               tp.List[int]], None]:
+    def get_border_strips(lambda_: tp.Tuple[int, ...], bs_length: int) ->\
+            tp.Generator[None, tp.Tuple[tp.List[int], tp.List[int]], None]:
         """
         Return generator of sub-partition lambda* of lambda_ and border strip xi_ of sum k such that
         lambda* + xi_ = lambda_, lambda* is a correct partition and xi_ is connected and has no 2x2 parts
@@ -30,27 +30,27 @@ class CharTable(object):
         lambda_ = list(lambda_)
         first_non_zero_row = 0
 
-        while k > 0 and row < len(lambda_):
+        while bs_length > 0 and row < len(lambda_):
 
             if row + 1 == len(lambda_):  # last left step
-                step = min(k, lambda_[row])
-                k -= step
+                step = min(bs_length, lambda_[row])
+                bs_length -= step
                 lambda_[row] -= step
                 xi_[row] += step
 
-                if k > 0:
+                if bs_length > 0:
                     return
 
             elif lambda_[row] > lambda_[row + 1]:  # left step
-                step = min(k, lambda_[row] - lambda_[row + 1])
-                k -= step
+                step = min(bs_length, lambda_[row] - lambda_[row + 1])
+                bs_length -= step
                 lambda_[row] -= step
                 xi_[row] += step
 
             else:  # down step
                 prev_row = row
                 while row < len(lambda_) and lambda_[row] == lambda_[prev_row]:
-                    k -= 1
+                    bs_length -= 1
                     xi_[row] += 1
                     row += 1
 
@@ -59,17 +59,17 @@ class CharTable(object):
 
                 row -= 1
 
-                while k < 0:
+                while bs_length < 0:
                     lambda_[first_non_zero_row] += xi_[first_non_zero_row]
-                    k += xi_[first_non_zero_row]
+                    bs_length += xi_[first_non_zero_row]
                     xi_[first_non_zero_row] = 0
                     first_non_zero_row += 1
 
-            if k == 0:
+            if bs_length == 0:
                 yield lambda_, xi_
                     
                 lambda_[first_non_zero_row] += xi_[first_non_zero_row]
-                k += xi_[first_non_zero_row]
+                bs_length += xi_[first_non_zero_row]
                 xi_[first_non_zero_row] = 0
                 if row == first_non_zero_row:
                     row += 1
@@ -99,31 +99,31 @@ class CharTable(object):
         """
         return tuple(item for item in lambda_ if item != 0)
 
-    def char_value(self, lambda_: tp.Tuple[int, ...], rho_: tp.Tuple[int, ...]) -> int:
+    def char_value(self, lambda_: tp.Tuple[int, ...], mu_: tp.Tuple[int, ...]) -> int:
         """
         Calculates character value of irreducible character on conjugacy class
         lambda_: irreducible character
-        rho_: conjugacy class
+        mu_: conjugacy class
         return: value irreducible character of conjugacy class and save it into table
         """
 
         lambda_ = self.correct_partition(lambda_)
-        rho_ = self.correct_partition(rho_)
+        mu_ = self.correct_partition(mu_)
 
         if sum(lambda_) < 2:
             return 1
 
-        value = self.character_values[lambda_].get(rho_)
+        value = self.character_values[lambda_].get(mu_)
         if value is not None:
             return value
 
         result = 0
-        for partition, xi_ in self.get_border_strips(lambda_, rho_[0]):
+        for partition, xi_ in self.get_border_strips(lambda_, mu_[0]):
             partition = self.correct_partition(partition)
             xi_ = self.correct_partition(xi_)
-            result += (-1) ** (len(xi_) - 1) * self.char_value(partition, rho_[1:])
+            result += (-1) ** (len(xi_) - 1) * self.char_value(partition, mu_[1:])
 
-        self.character_values[lambda_][rho_] = result
+        self.character_values[lambda_][mu_] = result
 
         return result
 
@@ -138,8 +138,8 @@ class CharTable(object):
 
         for lambda_ in partitions:
             new_line = []
-            for rho_ in partitions:
-                new_line.append(self.char_value(lambda_, rho_))
+            for mu_ in partitions:
+                new_line.append(self.char_value(lambda_, mu_))
             table.append(new_line.copy())
 
         return table
