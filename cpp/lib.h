@@ -112,13 +112,13 @@ public:
         for (auto num = partitions.size(); num < n + 1; ++num) {
             std::vector<Partition> partitions_of_num;
             for (size_t index = 0; index < num; ++index) {
-                for (const auto &partition: partitions[index]) {
-                    Partition new_partition = partition;
-                    new_partition.push_back(num - index);
-                    std::sort(new_partition.rbegin(), new_partition.rend());
-                    partitions_of_num.push_back(new_partition);
+                for (auto partition: partitions[index]) {
+                    partition.push_back(num - index);
+                    std::sort(partition.rbegin(), partition.rend());
+                    partitions_of_num.push_back(partition);
                 }
             }
+            std::sort(partitions_of_num.begin(), partitions_of_num.end());
             auto last = std::unique(partitions_of_num.begin(), partitions_of_num.end());
             partitions_of_num.erase(last, partitions_of_num.end());
             partitions.push_back(partitions_of_num);
