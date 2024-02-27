@@ -23,7 +23,7 @@ void calculate_all_irreducible_characters_for_4_conjugacy_classes(bool sequentia
 
         clock_t start = clock();
 
-        for (const auto& lambda: test.calculate_partitions(4 * n)) {
+        for (const auto& lambda: *test.calculate_partitions(4 * n)) {
             test.char_value(lambda, rho_1);
             test.char_value(lambda, rho_2);
             test.char_value(lambda, rho_3);

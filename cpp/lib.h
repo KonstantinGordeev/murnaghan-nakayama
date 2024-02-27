@@ -108,7 +108,7 @@ public:
     // Dynamically calculates partitions for every k in interval [len(self.partitions) + 1, n]
     // Values caches in 'self.partitions'
     // Returns vector of partitions for n
-    std::vector<Partition> calculate_partitions(size_t n) {
+    std::vector<Partition>* calculate_partitions(size_t n) {
         for (auto num = partitions.size(); num < n + 1; ++num) {
             std::vector<Partition> partitions_of_num;
             for (size_t index = 0; index < num; ++index) {
@@ -123,7 +123,7 @@ public:
             partitions_of_num.erase(last, partitions_of_num.end());
             partitions.push_back(partitions_of_num);
         }
-        return partitions[n];
+        return &partitions[n];
     }
 
 public:
@@ -162,12 +162,13 @@ public:
     // return: square table of character values
     std::vector<std::vector<int>> character_table(size_t n) {
         auto partitions_for_n = calculate_partitions(n);
-        std::vector<std::vector<int>> table(partitions_for_n.size(), std::vector<int>(partitions_for_n.size()));
+        auto partitions_count = partitions_for_n->size();
+        std::vector<std::vector<int>> table(partitions_count, std::vector<int>(partitions_count));
 
-        for (size_t i_index = 0; i_index < partitions_for_n.size(); ++i_index) {
-            const auto &lambda = partitions_for_n[i_index];
-            for (size_t j_index = 0; j_index < partitions_for_n.size(); ++j_index) {
-                const auto &rho = partitions_for_n[j_index];
+        for (size_t i_index = 0; i_index < partitions_count; ++i_index) {
+            const auto &lambda = partitions_for_n->at(i_index);
+            for (size_t j_index = 0; j_index < partitions_count; ++j_index) {
+                const auto &rho = partitions_for_n->at(j_index);
                 int cv = char_value(lambda, rho);
                 table[i_index][j_index] = cv;
             }
