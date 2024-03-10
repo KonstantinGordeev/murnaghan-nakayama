@@ -2,7 +2,7 @@
 #include <ctime>
 #include "lib.h"
 
-void calculate_all_irreducible_characters_for_4_conjugacy_classes(bool sequentially = false, size_t max_n = 31) {
+void calculate_all_irreducible_characters_for_4_conjugacy_classes(bool sequentially = true, size_t max_n = 30) {
     auto test = CharTable();
 
     double cumulative_time = 0;
@@ -14,11 +14,11 @@ void calculate_all_irreducible_characters_for_4_conjugacy_classes(bool sequentia
 
         auto rho_1 = Partition(n, 4);
         auto rho_2 = Partition(n - 1, 4);
-        rho_2.push_back(3);
-        rho_2.push_back(1);
+        rho_2.emplace_back(3);
+        rho_2.emplace_back(1);
         auto rho_3 = Partition(2 * n - 1, 2);
-        rho_3.push_back(1);
-        rho_3.push_back(1);
+        rho_3.emplace_back(1);
+        rho_3.emplace_back(1);
         auto rho_4 = Partition(4 * n, 1);
 
         clock_t start = clock();
@@ -38,7 +38,7 @@ void calculate_all_irreducible_characters_for_4_conjugacy_classes(bool sequentia
     }
 }
 
-void calculate_char_tables(bool sequentially = false, size_t max_n = 31) {
+void calculate_char_tables(bool sequentially = true, size_t max_n = 31) {
     auto test = CharTable();
 
     double cumulative_time = 0;
