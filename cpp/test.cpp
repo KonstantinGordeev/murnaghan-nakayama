@@ -97,7 +97,7 @@ BOOST_AUTO_TEST_SUITE(BorderStripsTest)
 
     struct BorderStripsCase {
         Partition lambda;
-        BigInt k;
+        size_t k;
         std::vector<PartitionWithoutBorderStrip> border_strips;
     };
 

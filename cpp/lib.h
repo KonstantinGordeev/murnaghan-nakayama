@@ -2,9 +2,10 @@
 #include <map>
 #include <vector>
 #include <boost/multiprecision/cpp_int.hpp>
+//#include "partitions.h"
 
 using BigInt = boost::multiprecision::cpp_int;
-using Partition = std::vector<BigInt>;
+using Partition = std::vector<size_t>;
 
 struct PartitionWithoutBorderStrip {
     Partition partition;
@@ -32,7 +33,7 @@ BigInt MinusOnePow(Value power) {
 // The values are calculated using the Murnaghan–Nakayama rule
 class CharTable {
 public:
-    std::map<Partition, std::map<Partition, BigInt>> character_values;
+    std::vector<std::map<Partition, std::map<Partition, BigInt>>> character_values;
     std::vector<std::vector<Partition>> partitions = {{{}}, {{1,}}};
 
     // Remove zero items from partition
@@ -56,7 +57,7 @@ public:
         size_t first_non_zero_row = 0;
         while (bs_length > 0 and row < lambda.size()) {
             if (row + 1 == lambda.size()) {  // last left step
-                BigInt step = std::min(bs_length, static_cast<BigInt>(lambda[row]));
+                size_t step = std::min(static_cast<size_t>(bs_length), lambda[row]);
                 bs_length -= step;
                 lambda[row] -= step;
                 xi[row] += step;
@@ -64,7 +65,7 @@ public:
                     return result;
                 }
             } else if (lambda[row] > lambda[row + 1]) {  // left step
-                auto step = std::min(bs_length, static_cast<BigInt>(lambda[row] - lambda[row + 1]));
+                auto step = std::min(static_cast<size_t>(bs_length), lambda[row] - lambda[row + 1]);
                 bs_length -= step;
                 lambda[row] -= step;
                 xi[row] += step;
@@ -84,7 +85,7 @@ public:
 
                 while (bs_length < 0) {
                     lambda[first_non_zero_row] += xi[first_non_zero_row];
-                    bs_length += static_cast<BigInt>(xi[first_non_zero_row]);
+                    bs_length += xi[first_non_zero_row];
                     xi[first_non_zero_row] = 0;
                     first_non_zero_row += 1;
                 }
@@ -94,7 +95,7 @@ public:
                 result.push_back({lambda, xi});
 
                 lambda[first_non_zero_row] += xi[first_non_zero_row];
-                bs_length += static_cast<BigInt>(xi[first_non_zero_row]);
+                bs_length += xi[first_non_zero_row];
                 xi[first_non_zero_row] = 0;
                 if (row == first_non_zero_row) {
                     row += 1;
@@ -124,6 +125,7 @@ public:
             partitions_of_num.erase(last, partitions_of_num.end());
             partitions.push_back(partitions_of_num);
         }
+        character_values.resize(n + 1);
         return &partitions[n];
     }
 
@@ -135,17 +137,19 @@ public:
     BigInt char_value(Partition lambda, Partition rho) {
         lambda = correct_partition(lambda);
         rho = correct_partition(rho);
-        if (Sum(lambda) < 2) {
+        size_t partition_len = Sum(lambda);
+
+        if (partition_len < 2) {
             return 1;
         }
 
-        auto value = character_values[lambda].find(rho);
-        if (value != character_values[lambda].end()) {
+        auto value = character_values[partition_len][lambda].find(rho);
+        if (value != character_values[partition_len][lambda].end()) {
             return value->second;
         }
 
         BigInt result = 0;
-        auto border_strips = get_border_strips(lambda, static_cast<BigInt>(rho[0]));
+        auto border_strips = get_border_strips(lambda, rho[0]);
         for (const auto &pair: border_strips) {
             auto partition = correct_partition(pair.partition);
             auto xi = correct_partition(pair.border_strip);
@@ -153,7 +157,7 @@ public:
                                                               {rho.begin() + 1, rho.end()});
         }
 
-        character_values[lambda][rho] = result;
+        character_values[partition_len][lambda][rho] = result;
 
         return result;
     }
