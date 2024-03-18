@@ -1,11 +1,21 @@
 #include <algorithm>
-#include <map>
+#include <unordered_map>
 #include <vector>
 #include <boost/multiprecision/cpp_int.hpp>
 //#include "partitions.h"
 
 using BigInt = boost::multiprecision::cpp_int;
 using Partition = std::vector<size_t>;
+
+struct PartitionHash {
+    size_t operator()(Partition const& lambda) const noexcept{
+        size_t result = 0;
+        for (size_t item: lambda) {
+            result = result * 1024 + item;
+        }
+        return result;
+    }
+};
 
 struct PartitionWithoutBorderStrip {
     Partition partition;
@@ -33,7 +43,8 @@ BigInt MinusOnePow(Value power) {
 // The values are calculated using the Murnaghan–Nakayama rule
 class CharTable {
 public:
-    std::vector<std::map<Partition, std::map<Partition, BigInt>>> character_values;
+    std::vector<std::unordered_map<Partition, std::unordered_map<Partition, BigInt,
+                PartitionHash>, PartitionHash>> character_values;
     std::vector<std::vector<Partition>> partitions = {{{}}, {{1,}}};
 
     // Remove zero items from partition
