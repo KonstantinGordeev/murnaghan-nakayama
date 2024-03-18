@@ -9,22 +9,23 @@ class CharTable(object):
     """
 
     def __init__(self) -> None:
-        
+
         # TODO: list for n (degree of the group)
-        self.character_values: tp.Dict[tp.Tuple[int, ...], tp.Dict[tp.Tuple[int, ...], int]] = defaultdict(dict)
+        self.character_values: tp.List[tp.Dict[tp.Tuple[int, ...], tp.Dict[tp.Tuple[int, ...], int]]] = \
+            [defaultdict(dict)]
 
         # for every n item contains list of partitions. Initialize for n = 0 and n = 1
         self.partitions: tp.List[tp.List[tp.Tuple[int, ...]]] = [[()], [(1,)]]
 
     @staticmethod
-    def get_border_strips(lambda_: tp.Tuple[int, ...], bs_length: int) ->\
+    def get_border_strips(lambda_: tp.Tuple[int, ...], bs_length: int) -> \
             tp.Generator[None, tp.Tuple[tp.List[int], tp.List[int]], None]:
         """
         Return generator of sub-partition lambda* of lambda_ and border strip xi_ of sum k such that
         lambda* + xi_ = lambda_, lambda* is a correct partition and xi_ is connected and has no 2x2 parts
         Computational complexity is O(lambda_[0] + len(lambda_))
         """
-        
+
         row = 0
         xi_ = [0] * len(lambda_)
         lambda_ = list(lambda_)
@@ -67,7 +68,7 @@ class CharTable(object):
 
             if bs_length == 0:
                 yield lambda_, xi_
-                    
+
                 lambda_[first_non_zero_row] += xi_[first_non_zero_row]
                 bs_length += xi_[first_non_zero_row]
                 xi_[first_non_zero_row] = 0
@@ -110,10 +111,12 @@ class CharTable(object):
         lambda_ = self.correct_partition(lambda_)
         mu_ = self.correct_partition(mu_)
 
-        if sum(lambda_) < 2:
+        partition_len = sum(lambda_)
+
+        if partition_len < 2:
             return 1
 
-        value = self.character_values[lambda_].get(mu_)
+        value = self.character_values[partition_len][lambda_].get(mu_)
         if value is not None:
             return value
 
@@ -123,7 +126,7 @@ class CharTable(object):
             xi_ = self.correct_partition(xi_)
             result += (-1) ** (len(xi_) - 1) * self.char_value(partition, mu_[1:])
 
-        self.character_values[lambda_][mu_] = result
+        self.character_values[partition_len][lambda_][mu_] = result
 
         return result
 
