@@ -12,14 +12,14 @@ void calculate_all_irreducible_characters_for_4_conjugacy_classes(bool sequentia
             test = CharTable();
         }
 
-        auto rho_1 = Partition(n, 4);
-        auto rho_2 = Partition(n - 1, 4);
+        auto rho_1 = Partition({n, 4});
+        auto rho_2 = Partition({n - 1, 4});
         rho_2.emplace_back(3);
         rho_2.emplace_back(1);
-        auto rho_3 = Partition(2 * n - 1, 2);
+        auto rho_3 = Partition({2 * n - 1, 2});
         rho_3.emplace_back(1);
         rho_3.emplace_back(1);
-        auto rho_4 = Partition(4 * n, 1);
+        auto rho_4 = Partition({4 * n, 1});
 
         clock_t start = clock();
 

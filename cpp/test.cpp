@@ -57,25 +57,25 @@ BOOST_AUTO_TEST_SUITE(PartitionsTest)
 
     std::vector<PartitionsCase> test_cases = {
             {3, {
-                {1, 1, 1},
-                {2, 1},
-                {3},
+                Partition({1, 1, 1}),
+                Partition({2, 1}),
+                Partition({3}),
             }},
             {4, {
-                {1, 1, 1, 1},
-                {2, 1, 1},
-                {2, 2},
-                {3, 1},
-                {4},
+                Partition({1, 1, 1, 1}),
+                Partition({2, 1, 1}),
+                Partition({2, 2}),
+                Partition({3, 1}),
+                Partition({4}),
             }},
             {5, {
-                {1, 1, 1, 1, 1},
-                {2, 1, 1, 1},
-                {2, 2, 1},
-                {3, 1, 1},
-                {3, 2},
-                {4, 1},
-                {5},
+                Partition({1, 1, 1, 1, 1}),
+                Partition({2, 1, 1, 1}),
+                Partition({2, 2, 1}),
+                Partition({3, 1, 1}),
+                Partition({3, 2}),
+                Partition({4, 1}),
+                Partition({5}),
             }},
     };
 
@@ -102,16 +102,16 @@ BOOST_AUTO_TEST_SUITE(BorderStripsTest)
     };
 
     std::vector<BorderStripsCase> test_cases = {
-            {{5,2,1},
+            {Partition({5,2,1}),
              3, {
-                {{2, 2, 1}, {3, 0, 0}},
-                {{5, 0, 0}, {0, 2, 1}},
+                {Partition({2, 2, 1}), {3, 0, 0}},
+                {Partition({5, 0, 0}), {0, 2, 1}},
             }},
-            {{4, 4, 3, 1},
+            {Partition({4, 4, 3, 1}),
              5, {
-                {{3, 2, 1, 1}, {1, 2, 2, 0}},
+                {Partition({3, 2, 1, 1}), {1, 2, 2, 0}},
             }},
-            {{2, 1},
+            {Partition({2, 1}),
              2,
              {}
             },

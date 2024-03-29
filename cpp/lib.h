@@ -19,7 +19,7 @@ struct PartitionHash {
 
 struct PartitionWithoutBorderStrip {
     Partition partition;
-    Partition border_strip;
+    std::vector<size_t> border_strip;
 };
 
 template<class Value>
@@ -64,7 +64,7 @@ public:
     static std::vector<PartitionWithoutBorderStrip> get_border_strips(Partition lambda, BigInt bs_length) {
         std::vector<PartitionWithoutBorderStrip> result;
         size_t row = 0;
-        Partition xi(lambda.size(), 0);
+        Partition xi({lambda.size(), 0});
         size_t first_non_zero_row = 0;
         while (bs_length > 0 and row < lambda.size()) {
             if (row + 1 == lambda.size()) {  // last left step
