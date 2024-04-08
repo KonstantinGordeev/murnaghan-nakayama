@@ -12,7 +12,7 @@ class CharTable(object):
 
         # TODO: list for n (degree of the group)
         self.character_values: tp.List[tp.Dict[tp.Tuple[int, ...], tp.Dict[tp.Tuple[int, ...], int]]] = \
-            [defaultdict(dict)]
+            [{}, {(1): 1}]
 
         # for every n item contains list of partitions. Initialize for n = 0 and n = 1
         self.partitions: tp.List[tp.List[tp.Tuple[int, ...]]] = [[()], [(1,)]]
@@ -91,6 +91,7 @@ class CharTable(object):
                 for partition in self.partitions[i]:
                     partitions_of_num.add(tuple(sorted((num - i,) + partition, reverse=True)))
             self.partitions.append(sorted(list(partitions_of_num)))
+            self.character_values.append(defaultdict(dict))
         return self.partitions[n]
 
     @staticmethod
@@ -115,6 +116,9 @@ class CharTable(object):
 
         if partition_len < 2:
             return 1
+
+        if partition_len > len(self.partitions) - 1:
+            self.calculate_partitions(partition_len)
 
         value = self.character_values[partition_len][lambda_].get(mu_)
         if value is not None:
