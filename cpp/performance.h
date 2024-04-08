@@ -4,6 +4,7 @@
 
 void calculate_all_irreducible_characters_for_4_conjugacy_classes(bool sequentially = true, size_t max_n = 30) {
     auto test = CharTable();
+    auto calculator = PartitionsCalculator();
 
     double cumulative_time = 0;
 
@@ -23,7 +24,7 @@ void calculate_all_irreducible_characters_for_4_conjugacy_classes(bool sequentia
 
         clock_t start = clock();
 
-        for (const auto& lambda: *test.calculate_partitions(4 * n)) {
+        for (const auto& lambda: calculator.get(4 * n)) {
             test.char_value(lambda, rho_1);
             test.char_value(lambda, rho_2);
             test.char_value(lambda, rho_3);

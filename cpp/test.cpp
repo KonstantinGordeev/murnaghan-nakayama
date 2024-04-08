@@ -4,6 +4,8 @@
 #include <boost/test/included/unit_test.hpp>
 #include "lib.h"
 
+using PartitionT = Partition<size_t>;
+
 BOOST_AUTO_TEST_SUITE(CharTableTest)
 
     struct CharTableCase {
@@ -52,38 +54,38 @@ BOOST_AUTO_TEST_SUITE(PartitionsTest)
 
     struct PartitionsCase {
         size_t n;
-        std::vector<Partition> partitions;
+        std::vector<PartitionT> partitions;
     };
 
     std::vector<PartitionsCase> test_cases = {
             {3, {
-                Partition({1, 1, 1}),
-                Partition({2, 1}),
-                Partition({3}),
+                PartitionT({1, 1, 1}),
+                PartitionT({2, 1}),
+                PartitionT({3}),
             }},
             {4, {
-                Partition({1, 1, 1, 1}),
-                Partition({2, 1, 1}),
-                Partition({2, 2}),
-                Partition({3, 1}),
-                Partition({4}),
+                PartitionT({1, 1, 1, 1}),
+                PartitionT({2, 1, 1}),
+                PartitionT({2, 2}),
+                PartitionT({3, 1}),
+                PartitionT({4}),
             }},
             {5, {
-                Partition({1, 1, 1, 1, 1}),
-                Partition({2, 1, 1, 1}),
-                Partition({2, 2, 1}),
-                Partition({3, 1, 1}),
-                Partition({3, 2}),
-                Partition({4, 1}),
-                Partition({5}),
+                PartitionT({1, 1, 1, 1, 1}),
+                PartitionT({2, 1, 1, 1}),
+                PartitionT({2, 2, 1}),
+                PartitionT({3, 1, 1}),
+                PartitionT({3, 2}),
+                PartitionT({4, 1}),
+                PartitionT({5}),
             }},
     };
 
     auto partitions_test(size_t n) {
         PartitionsCase test_case = test_cases[n];
-        auto calculator = CharTable();
-        auto partitions = calculator.calculate_partitions(test_case.n);
-        BOOST_CHECK(std::equal(partitions->begin(), partitions->end(),
+        auto calculator = PartitionsCalculator();
+        auto partitions = calculator.get(test_case.n);
+        BOOST_CHECK(std::equal(partitions.begin(), partitions.end(),
                                test_case.partitions.begin()));
     }
 
@@ -96,22 +98,22 @@ BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE(BorderStripsTest)
 
     struct BorderStripsCase {
-        Partition lambda;
+        PartitionT lambda;
         size_t k;
         std::vector<PartitionWithoutBorderStrip> border_strips;
     };
 
     std::vector<BorderStripsCase> test_cases = {
-            {Partition({5,2,1}),
+            {PartitionT({5,2,1}),
              3, {
-                {Partition({2, 2, 1}), {3, 0, 0}},
-                {Partition({5, 0, 0}), {0, 2, 1}},
+                {PartitionT({2, 2, 1}), {3}},
+                {PartitionT({5}), {2, 1}},
             }},
-            {Partition({4, 4, 3, 1}),
+            {PartitionT({4, 4, 3, 1}),
              5, {
-                {Partition({3, 2, 1, 1}), {1, 2, 2, 0}},
+                {PartitionT({3, 2, 1, 1}), {1, 2, 2}},
             }},
-            {Partition({2, 1}),
+            {PartitionT({2, 1}),
              2,
              {}
             },
@@ -120,12 +122,12 @@ BOOST_AUTO_TEST_SUITE(BorderStripsTest)
     bool bs_equal (const PartitionWithoutBorderStrip& lhs, const PartitionWithoutBorderStrip& rhs) {
         return std::equal(lhs.partition.begin(), lhs.partition.end(), rhs.partition.begin()) and
             std::equal(lhs.border_strip.begin(), lhs.border_strip.end(), rhs.border_strip.begin());
-    };
+    }
 
     auto border_strips_test(size_t n) {
         BorderStripsCase test_case = test_cases[n];
         auto calculator = CharTable();
-        auto result = calculator.get_border_strips(test_case.lambda, test_case.k);
+        auto result = CharTable::get_border_strips(test_case.lambda, test_case.k);
         BOOST_CHECK(std::equal(result.begin(), result.end(),
                                test_case.border_strips.begin(), bs_equal));
     }
