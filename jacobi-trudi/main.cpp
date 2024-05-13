@@ -1,37 +1,31 @@
 #include <pari/pari.h>
 #include <string>
+#include "../tools/partitions.h"
 
 static GEN p;
 static GEN x;
 
-GEN
-test_factor(void)	  /* void */
-{
-    p = pol_x(fetch_user_var("p"));
-    x = pol_x(0);
-    p = gaddgs(gadd(gsqr(x), gmulsg(2, x)), 1);
-    return factor(p);
-}
-
-GEN
-test_det(void)	  /* void */
-{
-    GEN m,x,p1;	  /* vec */
-    m = pol_x(fetch_user_var("m"));
-    x = pol_x(0);
-    p1 = cgetg(3, t_MAT);
-    gel(p1, 1) = cgetg(3, t_COL);
-    gel(p1, 2) = cgetg(3, t_COL);
-    gcoeff(p1, 1, 1) = gaddgs(gsqr(x), 1);
-    gcoeff(p1, 1, 2) = gaddgs(gmulsg(2, x), 7);
-    gcoeff(p1, 2, 1) = gaddgs(x, 6);
-    gcoeff(p1, 2, 2) = gsubgs(gpowgs(x, 3), 1);
-    m = p1;
-    return det(m);
+// zee(lambda) = the order of the S_n centralizer of a permutation of
+// cycle type lambda; i.e., 1^(m1)*m1!*2^(m2)*m2!*...
+size_t zee(const Partition<>& mu) {
+    size_t m = 1, res = 1;
+    for (auto& item: mu) {
+        res *= item;
+    }
+    for (size_t index = 1; index < mu.size(); ++index) {
+        if (mu[index] < mu[index - 1]) {
+            m = 1;
+        } else {
+            m += 1;
+        }
+        res *= m;
+    }
+    return res;
 }
 
 GEN top(GEN f, std::string basis = "p") {
     return f;
+}
 
 //    `SF/top`:=proc() local f,bases,sp,i,mu,b,d,a;
 //    f:=args[1]; bases:=`SF/getbase`(args) minus {'p'};
@@ -53,21 +47,33 @@ GEN top(GEN f, std::string basis = "p") {
 //    d:=SF['varset'](f,'p');
 //    collect(f,[seq(cat('p',i),i=1..d)],'distributed',normal);
 //    end:
+
+// sf2char(mu) applies the inverse characteristic map to schur(mu)
+// The result is expressed as a linear combination of characteristic
+// functions cl[mu] for partitions mu.
+std::vector<int> sf2char(const Partition<>& mu) {
+    GEN f = top(GEN());
+    auto d = mu.num();
+    std::vector<double> coefs = {1./3, 1./4};
+
 }
 
-GEN sf2char(GEN f, std::string basis = "p") {
-    f = top(f, basis);
-    return f;
+GEN
+test_det(void)	  /* void */
+{
+    GEN m,x,p1;	  /* vec */
+    m = pol_x(fetch_user_var("m"));
+    x = pol_x(0);
+    p1 = cgetg(3, t_MAT);
+    gel(p1, 1) = cgetg(3, t_COL);
+    gel(p1, 2) = cgetg(3, t_COL);
+    gcoeff(p1, 1, 1) = gaddgs(gsqr(x), 1);
+    gcoeff(p1, 1, 2) = gaddgs(gmulsg(2, x), 7);
+    gcoeff(p1, 2, 1) = gaddgs(x, 6);
+    gcoeff(p1, 2, 2) = gsubgs(gpowgs(x, 3), 1);
+    m = p1;
+    return det(m);
 }
-//`:=proc() local f,i,d,res,cfs,term,mu;
-//f:=SF['top'](args); d:=SF['varset'](f,'p');
-//cfs:=[coeffs(f,[seq(cat('p',i),i=1..d)],'term')];
-//term:=[term]; res:=0;
-//for i to nops(cfs) do
-//mu:=`SF/shape`(term[i],'p',d);
-//res:=res+SF['zee'](mu)*cfs[i]*cl[op(mu)];
-//od; res
-//        end:
 
 int
 main()

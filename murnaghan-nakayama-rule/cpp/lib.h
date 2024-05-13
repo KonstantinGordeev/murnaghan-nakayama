@@ -2,7 +2,7 @@
 #include <unordered_map>
 #include <vector>
 #include <boost/multiprecision/cpp_int.hpp>
-#include "partitions.h"
+#include "../../tools/partitions.h"
 
 using BigInt = boost::multiprecision::cpp_int;
 using PartitionT = Partition<size_t>;
