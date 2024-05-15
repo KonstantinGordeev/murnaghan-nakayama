@@ -13,14 +13,14 @@ void calculate_all_irreducible_characters_for_4_conjugacy_classes(bool sequentia
             test = CharTable();
         }
 
-        auto rho_1 = Partition({n, 4});
-        auto rho_2 = Partition({n - 1, 4});
+        auto rho_1 = Partition(std::vector<size_t>(n, 4));
+        auto rho_2 = Partition(std::vector<size_t>(n - 1, 4));
         rho_2.emplace_back(3);
         rho_2.emplace_back(1);
-        auto rho_3 = Partition({2 * n - 1, 2});
+        auto rho_3 = Partition(std::vector<size_t>(2 * n - 1, 2));
         rho_3.emplace_back(1);
         rho_3.emplace_back(1);
-        auto rho_4 = Partition({4 * n, 1});
+        auto rho_4 = Partition(std::vector<size_t>(4 * n, 1));
 
         clock_t start = clock();
 
@@ -56,7 +56,6 @@ void calculate_char_tables(bool sequentially = true, size_t max_n = 31) {
         clock_t end = clock();
         double time_diff = static_cast<double>(end - start) / CLOCKS_PER_SEC;
         cumulative_time += time_diff;
-
         std::cout << n << "\t" << time_diff << "\t" << cumulative_time << std::endl;
     }
 }

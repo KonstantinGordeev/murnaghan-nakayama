@@ -12,8 +12,8 @@ find_path(PARI_INCLUDE pari/pari.h REQUIRED)
 
 find_package(Boost 1.84 REQUIRED)
 
-add_executable(cpp main.cpp lib.h partitions.h performance.h)
-add_executable(test test.cpp lib.h partitions.h)
+add_executable(muranaghan-nakayama main.cpp lib.h ../../tools/partitions.h performance.h)
+add_executable(test test.cpp lib.h ../../tools/partitions.h)
 
-target_link_libraries(cpp PRIVATE Boost::headers)
+target_link_libraries(muranaghan-nakayama PRIVATE Boost::headers)
 target_link_libraries(test PRIVATE Boost::headers)
