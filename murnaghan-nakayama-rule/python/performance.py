@@ -50,4 +50,4 @@ def calculate_char_tables(sequentially: int = True, max_n: int = 31):
 
 
 if __name__ == "__main__":
-    calculate_char_tables(False)
+    calculate_all_irreducible_characters_for_4_conjugacy_classes()
